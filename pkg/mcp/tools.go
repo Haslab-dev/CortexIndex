@@ -252,6 +252,15 @@ func (s *Server) registerDefaultTools() {
 		}
 		return "codebase updated", nil
 	}
+
+	// 20. cortex_codebase_get
+	s.tools["cortex_codebase_get"] = func(ctx context.Context, args map[string]interface{}) (interface{}, error) {
+		content, err := knowledge.GetCodebase(s.cortexDir)
+		if err != nil {
+			return nil, err
+		}
+		return content, nil
+	}
 }
 
 func emptySchema() map[string]interface{} {
@@ -298,5 +307,6 @@ func (s *Server) listToolDefinitions() []toolDef {
 		{Name: "cortex_task_delete", Description: "Delete/remove task document from workspace", InputSchema: stringParamSchema("name", "Task name", true)},
 		{Name: "cortex_codebase_init", Description: "Initialize codebase.md architecture overview file", InputSchema: emptySchema()},
 		{Name: "cortex_codebase_update", Description: "Update codebase.md metadata recursively without database dependencies", InputSchema: emptySchema()},
+		{Name: "cortex_codebase_get", Description: "Get the content of the codebase.md architecture overview file", InputSchema: emptySchema()},
 	}
 }

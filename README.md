@@ -4,7 +4,7 @@
 
 ## ⚡ Key Features
 
-- **19 MCP Tools** — Full Model Context Protocol (MCP v1.0) over stdio JSON-RPC 2.0
+- **20 MCP Tools** — Full Model Context Protocol (MCP v1.0) over stdio JSON-RPC 2.0
 - **🧠 Brain System** — Persistent `.cortex/brain.md` stores project purpose, rules, and knowledge. Created on `cortex init`, queryable via `cortex_brain_get/update/append` MCP tools. AI agents learn once, remember forever.
 - **Search Layer** — Three search tools: recursive knowledge base search, line-level grep across workspace files, and glob pattern matching for file discovery.
 - **Skills Management** — Install, uninstall, list, search, and update reusable AI skill conventions templates. Both workspace-scoped and global.
@@ -25,7 +25,7 @@
                              │ MCP (Stdio)
                 ┌─────────────────────────┐
                 │    Cortex MCP Server     │
-                │  19 tools · JSON-RPC 2.0 │
+                │  20 tools · JSON-RPC 2.0 │
                 └─────────────────────────┘
                              │
            ┌─────────────────┼─────────────────┐
@@ -40,7 +40,7 @@
                           │                                         │
                     ┌─────▼─────┐                           ┌──────▼──────┐
                     │  Codebase  │                           │   Project    │
-                    │  (2 tools) │                           │   Metadata   │
+                    │  (3 tools) │                           │   Metadata   │
                     └───────────┘                           └──────────────┘
 ```
 
@@ -115,7 +115,7 @@ Tested on `cortex-index` (self-project):
 
 ---
 
-## 🔌 19 MCP Tools Reference
+## 🔌 20 MCP Tools Reference
 
 ### 🧠 Brain (3 tools)
 | Tool | Description | Example |
@@ -150,11 +150,12 @@ Tested on `cortex-index` (self-project):
 | `cortex_task_show` | Show detailed task instructions | `{"name":"test"}` |
 | `cortex_task_delete` | Delete/remove task document from workspace | `{"name":"test"}` |
 
-### 📁 Codebase (2 tools)
+### 📁 Codebase (3 tools)
 | Tool | Description | Example |
 |:---|:---|---:|
 | `cortex_codebase_init` | Initialize codebase.md architecture overview | `{}` |
 | `cortex_codebase_update` | Update codebase.md metadata recursively | `{}` |
+| `cortex_codebase_get` | Get the content of the codebase.md architecture overview file | `{}` |
 
 ---
 
@@ -246,7 +247,7 @@ cortex mcp call cortex_brain_append '{"line":"Uses Pebble KV storage"}'
 
 ### MCP Tool Verification (2026-07-31)
 
-All 19 MCP tools were tested against this project using the cortex MCP interface:
+All 20 MCP tools were tested against this project using the cortex MCP interface:
 
 | # | Tool | Test Input | Result |
 |:---:|:---|:---|:---:|
@@ -269,6 +270,7 @@ All 19 MCP tools were tested against this project using the cortex MCP interface
 | 17 | `cortex_task_delete` | `{"name":"test"}` | ✅ Deleted |
 | 18 | `cortex_codebase_init` | `{}` | ✅ Initialized codebase.md |
 | 19 | `cortex_codebase_update` | `{}` | ✅ Updated codebase.md metadata |
+| 20 | `cortex_codebase_get` | `{}` | ✅ Returns codebase.md content |
 
 ### Category Summary
 
@@ -278,8 +280,8 @@ All 19 MCP tools were tested against this project using the cortex MCP interface
 | Search | search, grep, glob | 3 | ✅ All passing |
 | Skills | skill_install, skill_uninstall, skill_list, skill_search, skill_update | 5 | ✅ All passing |
 | Tasks | task_create, task_update, task_complete, task_list, task_show, task_delete | 6 | ✅ All passing |
-| Codebase | codebase_init, codebase_update | 2 | ✅ All passing |
-| **Total** | | **19** | **✅ All passing** |
+| Codebase | codebase_init, codebase_update, codebase_get | 3 | ✅ All passing |
+| **Total** | | **20** | **✅ All passing** |
 
 ---
 
