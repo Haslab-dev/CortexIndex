@@ -12,15 +12,6 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 
 | ID | Task | Depends on |
 |----|------|------------|
-| [T04](./tasks/T04-indexer.md) | Indexer: walk, hash, full + incremental update, deletion sweep | T02, T03 |
-| [T05](./tasks/T05-memory.md) | Markdown memory layer: `init` scaffold, config, memory inspection | T01 |
-| [T06](./tasks/T06-retrieval.md) | Retrieval commands: `search`, `symbol`, `refs`, `deps` | T02, T03, T04 |
-| [T07](./tasks/T07-context.md) | Context engine: layered retrieval, ranking, token budget, fallback | T05, T06 |
-| [T08](./tasks/T08-cli.md) | CLI wiring: all commands, flags, `watch`, graceful fallbacks | T04–T07 |
-| [T09](./tasks/T09-skill.md) | Agent Skill (`skills/cortex/SKILL.md`) | T08 |
-| [T10](./tasks/T10-readme.md) | README + usage docs | T08 |
-| [T11](./tasks/T11-tests.md) | Unit + end-to-end tests (per-language fixtures) | T03, T04, T06 |
-| [T12](./tasks/T12-dogfood.md) | Dogfood on Cortex repo itself + polish | T08, T11 |
 
 ### 🟨 In Progress
 
@@ -39,8 +30,17 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 | ID | Task | Evidence |
 |----|------|----------|
 | [T01](./tasks/T01-scaffold.md) | Project scaffold + dependency verification | `go mod init cortex`; smoke test: tree-sitter parsed Go source + FTS5 MATCH returned row (`modernc.org/sqlite` v1.58.0, `smacker/go-tree-sitter` dd81d9e) |
-| [T02](./tasks/T02-store.md) | SQLite store layer | `feat(T02)` commit 7630335; `go test ./internal/store/` green (idempotent replace, clean remove, FTS incl. camel parts, ref attribution) |
-| [T03](./tasks/T03-languages.md) | Tree-sitter extractors (11 languages) | `feat(T03)` commit 7102aa0; table-driven tests per language green; AST-shape quirks verified via dump tests |
+| [T02](./tasks/T02-store.md) | SQLite store layer | `feat(T02)` commit 7630335; tests prove idempotent replace, clean remove, FTS camel-part lookup, snippets, ref attribution |
+| [T03](./tasks/T03-languages.md) | Tree-sitter extractors (11 languages) | `feat(T03)` commit 7102aa0; per-language assertion tests green; AST quirks pinned by dump tests |
+| [T04](./tasks/T04-indexer.md) | Indexer (full + incremental) | `feat(T04)` commit d2e126c; tests prove 0-reindex on unchanged, single-file edit, deletion sweep, parse-failure FTS fallback |
+| [T05](./tasks/T05-memory.md) | Markdown memory layer | `feat(T05)` commit 44c10cb; init idempotence + config parsing tested; edits survive re-init |
+| [T06](./tasks/T06-retrieval.md) | Retrieval commands | `feat(T06)` commit 1fcbf13; search/symbol/refs/deps tested on fixture incl. calls, callers, imports, --src |
+| [T07](./tasks/T07-context.md) | Context engine | `feat(T07)` commit 7f6912f; layered output, ranking, budget trimming, no-index fallback tested |
+| [T08](./tasks/T08-cli.md) | CLI wiring | `feat(T08)` commit aca3823; all 11 commands verified e2e on fixture repo incl. deletion sweep and fallback |
+| [T09](./tasks/T09-skill.md) | Agent Skill | `docs(T09,T10)` commit aadbe6c; skills/cortex/SKILL.md with frontmatter, workflow, etiquette |
+| [T10](./tasks/T10-readme.md) | README & docs | `docs(T09,T10)` commit aadbe6c; README.md with quickstart, commands, config, principles |
+| [T11](./tasks/T11-tests.md) | Tests | `go test ./...` green across lang/store/index/memory/retrieve/context/lexsearch; `test(T11)` commit below |
+| [T12](./tasks/T12-dogfood.md) | Dogfooding & polish | indexed own repo: 51 files/265 symbols in 88 ms; update 14 ms (0 reindexed); query 9 ms; `fix(T12)` ranking polish commit |
 
 ## V1 scope recap (from PRD §28)
 
