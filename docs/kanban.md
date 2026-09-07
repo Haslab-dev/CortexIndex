@@ -12,8 +12,7 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 
 | ID | Task | Depends on |
 |----|------|------------|
-| [T14](./tasks/T14-skill-installer.md) | Skill installer for OpenCode, Codex, OMP, pi, Claude | T08, T09 |
-| [T15](./tasks/T15-agents.md) | `AGENTS.md` generator/updater | T08, T09 |
+| — | — | — |
 
 ### 🟨 In Progress
 
@@ -44,6 +43,8 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 | [T11](./tasks/T11-tests.md) | Tests | `go test ./...` green across lang/store/index/memory/retrieve/context/lexsearch; `test(T11)` commit below |
 | [T12](./tasks/T12-dogfood.md) | Dogfooding & polish | indexed own repo: 51 files/265 symbols in 88 ms; update 14 ms (0 reindexed); query 9 ms; `fix(T12)` ranking polish commit |
 | [T13](./tasks/T13-build-install.md) | Makefile, native build/install/PATH | `make check` green; staged install produced mode 0755 binary and `cortex 0.1.0`; `make env` emitted sourceable PATH export |
+| [T14](./tasks/T14-skill-installer.md) | Skill installer | `feat(T14)` commit 919e8dc; destination/idempotence/conflict tests green; CLI installed all five native skills plus shared path |
+| [T15](./tasks/T15-agents.md) | `AGENTS.md` generator/updater | `feat(T15)` commit below; create/append/replace/idempotence tests and CLI smoke test green |
 
 ## V1 scope recap (from PRD §28)
 

@@ -1,6 +1,6 @@
 # T14 — Agent Skill installer
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T08, T09
 
 ## Goal
@@ -9,8 +9,8 @@ Install Cortex's embedded `SKILL.md` into the native project or global skill dir
 
 ## Acceptance criteria
 
-- [ ] Supports `opencode`, `codex`, `omp`, `pi`, `claude`, and `shared` destination mappings in project and global scopes.
-- [ ] `cortex skill install` is idempotent; identical files are skipped.
-- [ ] Conflicting files are not overwritten without `--force`; writes create parents and use safe file permissions.
-- [ ] Skill source is embedded so a binary installed on PATH does not depend on the source checkout.
-- [ ] CLI output lists installed/skipped/conflict paths as Markdown.
+- [x] Supports `opencode`, `codex`, `omp`, `pi`, `claude`, and `shared` destination mappings in project and global scopes (destination matrix tests).
+- [x] `cortex skill install` is idempotent; identical files are skipped.
+- [x] Conflicting files are not overwritten without `--force`; writes create parents and use safe file permissions.
+- [x] Skill source is embedded so a binary installed on PATH does not depend on the source checkout.
+- [x] CLI output lists installed/skipped/conflict paths as Markdown (CLI smoke test).

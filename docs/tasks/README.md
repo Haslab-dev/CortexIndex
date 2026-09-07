@@ -23,6 +23,9 @@
 | [T10](./T10-readme.md) | README & docs | — |
 | [T11](./T11-tests.md) | Tests | §28 |
 | [T12](./T12-dogfood.md) | Dogfooding & polish | §30, §31 |
+| [T13](./T13-build-install.md) | Makefile, native build/install/PATH | Delivery follow-up |
+| [T14](./T14-skill-installer.md) | Agent Skill installer | Delivery follow-up |
+| [T15](./T15-agents.md) | `AGENTS.md` generator/updater | Delivery follow-up |
 
 ## Commit policy
 
