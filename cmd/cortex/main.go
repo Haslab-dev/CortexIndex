@@ -51,6 +51,10 @@ func main() {
 		err = cmdMemory()
 	case "watch":
 		err = cmdWatch(rest)
+	case "skill", "skills":
+		err = cmdSkill(rest)
+	case "agents":
+		err = cmdAgents(rest)
 	case "version", "--version", "-v":
 		fmt.Printf("cortex %s\n", version)
 	case "help", "--help", "-h":
@@ -80,6 +84,8 @@ Usage:
   cortex context "<task>"        Build task-specific context for an agent
   cortex memory                  Print all project memory
   cortex watch [--interval S]    Continuously apply incremental updates
+  cortex skill install [flags]   Install Agent Skills for coding agents
+  cortex agents init [--dir P]  Create/update root AGENTS.md instructions
   cortex version                 Print version
 
 All output is Markdown. Memory lives in .cortex/*.md (human-editable);
