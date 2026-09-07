@@ -1,6 +1,6 @@
 # T05 — Markdown memory layer
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T01
 **PRD sections:** §7 Project Structure, §8–§11, §18 Memory Update, §19 Memory Lifecycle, §24 Human Control
 
@@ -19,7 +19,7 @@ Human-readable durable knowledge in `.cortex/` — editable, Git-friendly, never
 
 ## Acceptance criteria
 
-- [ ] `cortex init` creates the full scaffold; second run changes nothing user-facing.
-- [ ] Edits to `project.md` survive `cortex init` / `cortex update`.
-- [ ] `cortex memory` prints current memory contents to stdout.
-- [ ] `config.md` `ignore:` entries actually exclude paths from indexing (T04 honors them).
+- [x] `cortex init` creates the full scaffold; second run changes nothing user-facing (TestInitIdempotent).
+- [x] Edits to `project.md` survive `cortex init` / `cortex update`.
+- [x] `cortex memory` prints current memory contents to stdout (verified e2e).
+- [x] `config.md` `ignore:` entries exclude paths from indexing (TestIgnoreRules).

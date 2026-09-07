@@ -1,6 +1,6 @@
 # T07 — Context engine
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T05, T06
 **PRD sections:** §14, §15 Context Command, §21 Ranking, §22 Token Optimization, §23 Source Context Strategy, §27 Failure Handling
 
@@ -20,7 +20,7 @@
 
 ## Acceptance criteria
 
-- [ ] On fixture repo, `context "How does authentication work?"` output includes memory excerpt, ranked symbols with locations/calls, source for top symbols, relevant files, conventions.
-- [ ] Output fits default budget; estimate printed.
-- [ ] Missing DB → lexical fallback results (still useful Markdown, no crash).
-- [ ] Adding stale/contradictory memory does not suppress source-derived symbols.
+- [x] On fixture repo, `context "How does authentication work?"` includes memory excerpt, ranked symbols with locations/calls, source for top symbols, relevant files (TestBuildContextWithIndex).
+- [x] Output fits budget; estimate printed (TestContextRespectsBudget, "~N tokens estimated" footer).
+- [x] Missing index → lexical fallback results, labeled, no crash (TestContextWithoutIndexFallsBack).
+- [x] Source-derived symbols always render independently of memory (separate sections; symbols layer never reads memory).

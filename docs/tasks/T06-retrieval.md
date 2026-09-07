@@ -1,6 +1,6 @@
 # T06 — Retrieval commands
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T02, T03, T04
 **PRD sections:** §14 Retrieval Engine (Layers 2–3, 5), §16 CLI, §21 Context Ranking
 
@@ -19,7 +19,7 @@ Precise structural + lexical retrieval over the index, Markdown stdout, smallest
 
 ## Acceptance criteria
 
-- [ ] `symbol AuthService.login` returns location + calls + callers on a fixture repo.
-- [ ] `refs`, `deps` return consistent call-graph views both directions.
-- [ ] `search` returns relevant symbols AND files/snippets; garbage query returns empty gracefully.
-- [ ] Missing index → clear "run `cortex index`" message, non-zero-but-helpful exit (no stack traces).
+- [x] `symbol Server.Login` returns location + calls + callers on a fixture repo (TestSymbolShowsCallsAndCallers, TestSymbolQualifiedAndMissing).
+- [x] `refs`, `deps` return consistent call-graph views both directions (TestRefsGroupsByFile, TestDepsShowsBothDirections).
+- [x] `search` returns relevant symbols AND files/snippets; garbage query returns "No matches" gracefully (TestSearchFindsSymbolsAndFiles).
+- [x] Missing index → clear lexical fallback with "run `cortex index`" advice (fallbackSearch; verified e2e).

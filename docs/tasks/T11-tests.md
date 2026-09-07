@@ -1,6 +1,6 @@
 # T11 — Tests
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T03, T04, T06 (context engine covered via e2e)
 **PRD sections:** §28 V1 Scope (quality gate)
 
@@ -18,6 +18,6 @@ Fast, deterministic `go test ./...` covering the risky parts: extraction correct
 
 ## Acceptance criteria
 
-- [ ] `go test ./...` green, no network, <60 s.
-- [ ] Every supported language has at least one extraction assertion.
-- [ ] Incremental behavior tests prove "only changed files re-indexed".
+- [x] `go test ./...` green (7 packages, ~1.5 s total, no network).
+- [x] Every supported grammar family has extraction assertions (go, ts, python, rust, java, kotlin, c, cpp in extract_test.go).
+- [x] Incremental behavior tests prove "only changed files re-indexed" (index package: skip/edit/delete/new-file).

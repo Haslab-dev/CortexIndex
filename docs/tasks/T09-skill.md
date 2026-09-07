@@ -1,6 +1,6 @@
 # T09 — Agent Skill
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T08
 **PRD sections:** §17 Skill Integration, §28 Agent
 
@@ -20,6 +20,6 @@ Skill instructs the agent to:
 
 ## Acceptance criteria
 
-- [ ] SKILL.md has proper frontmatter (name/description) and correct binary usage.
-- [ ] Includes copy-pasteable workflow + memory update etiquette.
-- [ ] Installed-into-repo path documented (how an agent/user adopts it).
+- [x] SKILL.md has proper frontmatter (name/description) and correct `cortex` usage.
+- [x] Includes copy-pasteable workflow + memory update etiquette (good/bad examples, provenance template).
+- [x] Adoption path documented in README (cp -r skills/cortex into .agents/skills/).

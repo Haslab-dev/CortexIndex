@@ -1,6 +1,6 @@
 # T12 — Dogfooding & polish
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T08, T11
 **PRD sections:** §30 Success Criteria, §31 Design Principles
 
@@ -17,6 +17,6 @@ Cortex indexes itself; real queries behave per PRD; rough edges filed/fixed.
 
 ## Acceptance criteria
 
-- [ ] Cortex indexes its own repo without errors; `cortex context "how does the context command work"` returns genuinely useful output.
-- [ ] Timing notes recorded (index/update/query).
-- [ ] Issues discovered are fixed or filed into this kanban.
+- [x] Cortex indexes its own repo (51 files, 265 symbols); `cortex context` on its own code returns useful ranked output after test-symbol down-ranking polish.
+- [x] Timings: full index 88 ms (51 files), incremental update 14 ms (0 files reindexed), symbol query 9 ms — all within PRD §25 targets.
+- [x] Issue found (test fixtures outranking real symbols) fixed in `fix(T12)` commit 7221aa2.

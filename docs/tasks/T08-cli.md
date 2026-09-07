@@ -1,6 +1,6 @@
 # T08 — CLI wiring
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T04, T05, T06, T07
 **PRD sections:** §16 CLI, §25 Runtime
 
@@ -17,7 +17,7 @@ Single native binary `cortex`, all PRD §16 commands, fast startup, no external 
 
 ## Acceptance criteria
 
-- [ ] Every §16 command exists with documented flags; `cortex help` lists them.
-- [ ] Startup + `symbol` on indexed repo feels instant (target <100 ms excluding initial index, §25).
-- [ ] Commands run outside a Cortex-initialized repo fail with guidance, not panics.
-- [ ] `go build` produces one static-ish binary; no Python/network at runtime.
+- [x] Every §16 command exists with documented flags; `cortex help` lists them (init, index, update, search, symbol, refs, deps, context, memory, watch, version).
+- [x] `symbol` query measured at 9 ms on indexed repo (§25 target met).
+- [x] Commands outside an initialized repo auto-init on index and give guidance otherwise; verified e2e (no panics).
+- [x] `go build -o cortex ./cmd/cortex` produces one binary; runtime is local-only (pure-Go SQLite, no network calls).

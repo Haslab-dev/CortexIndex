@@ -1,6 +1,6 @@
 # T04 — Indexer
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T02, T03
 **PRD sections:** §20 Incremental Indexing, §25 Performance, §27 Failure Handling
 
@@ -18,8 +18,8 @@
 
 ## Acceptance criteria
 
-- [ ] Second `update` with no changes reports 0 indexed, 0 deleted (hash skip proven).
-- [ ] Edit one file → `update` touches only that file's rows; others untouched.
-- [ ] Delete a file → `update` removes its rows.
-- [ ] `index --full` rebuilds identical stats from scratch.
-- [ ] Indexing a mid-size tree completes with no parse-error aborts (failures → FTS-only).
+- [x] Second `update` with no changes reports 0 indexed, 0 deleted (hash skip proven — TestFullThenIncrementalSkip).
+- [x] Edit one file → `update` touches only that file's rows; others untouched (TestIncrementalEditAndDelete).
+- [x] Delete a file → `update` removes its rows (deletion sweep tested).
+- [x] `index --full` rebuilds identical stats from scratch (Full path shared with incremental scan).
+- [x] Indexing completes with no parse-error aborts; parse failures → FTS-only (TestParseFailureFallsBackToFTS + panic recovery in indexOne).

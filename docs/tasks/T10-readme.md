@@ -1,6 +1,6 @@
 # T10 — README & docs
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T08
 **PRD sections:** all (orientation)
 
@@ -18,5 +18,5 @@ README that gets a new user (human or agent) productive in one minute.
 
 ## Acceptance criteria
 
-- [ ] README covers build, quickstart, all commands, memory lifecycle, skill adoption.
-- [ ] Consistent `cortex` / `.cortex/` naming throughout.
+- [x] README covers build, quickstart, all commands, memory lifecycle, skill adoption.
+- [x] Consistent `cortex` / `.cortex/` naming throughout.
