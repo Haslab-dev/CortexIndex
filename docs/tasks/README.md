@@ -7,7 +7,7 @@
   2. Keep card ↔ task-file `Status` in sync.
   3. New discoveries become new task files (`TNN-slug.md`) and board cards, not silent scope creep.
   4. **One git commit per implemented feature/task** (see commit policy below).
-- Task ID numbering: `T01`–`T12` reserved for V1 scope from PRD §28.
+- Task ID numbering: `T01`–`T12` cover the original V1 scope; follow-up delivery work uses `T13+`.
 
 | ID | Task | PRD anchor |
 |----|------|-----------|

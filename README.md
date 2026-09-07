@@ -40,12 +40,25 @@ relevance, and call proximity, then trimmed to a token budget.
 
 ## Install
 
-Requires Go 1.22+.
+Cortex currently supports **native macOS and Linux builds**. Windows support is planned. Requires the Go version declared in `go.mod` and a working C compiler because Tree-sitter uses cgo; SQLite/FTS5 itself is pure Go.
 
 ```bash
 git clone <this-repo> && cd cortex
-go build -o cortex ./cmd/cortex   # single native binary
+make build
+make install
+eval "$(make env)"     # updates PATH in the current shell
+cortex version
 ```
+
+`make install` defaults to `$HOME/.local/bin` and does not modify shell startup files. Persist the PATH export in `~/.zprofile`/`~/.zshrc` (macOS) or `~/.profile`/`~/.bashrc` (Linux), or choose another destination:
+
+```bash
+make install PREFIX=/usr/local
+make install BINDIR="$(go env GOPATH)/bin"
+make install DESTDIR="$PWD/stage"   # packaging/staging
+```
+
+The direct fallback is `go build -o dist/cortex ./cmd/cortex`. Builds are host-native; a simple `GOOS=linux` cross-build from macOS is not supported because it needs a Linux C cross-compiler and sysroot.
 
 ## Quickstart
 
@@ -86,19 +99,32 @@ cortex refs "TokenStore"
 cortex context "add rate limiting to the login endpoint" --budget 4000
 ```
 
-## Agent skill
+## Agent skill and session instructions
 
-Install the bundled skill so agents use Cortex automatically:
+Install the bundled skill for OpenCode, Codex, oh-my-pi (OMP), pi, and Claude:
 
 ```bash
-cp -r skills/cortex /path/to/your-project/.agents/skills/
+cortex skill install                         # project-local native skills
+cortex skill install --agent shared          # interoperable .agents/skills copy
+cortex skill install --agent all --global    # user-wide native skills
 ```
 
-The skill (see [skills/cortex/SKILL.md](./skills/cortex/SKILL.md)) teaches the
-agent to: run `cortex context` before any exploration, prefer structural
-queries over grep, read source only for needed symbols, store durable
-knowledge (never task chatter) with provenance, and run `cortex update`
-after changes.
+Project destinations are `.opencode/skills`, `.codex/skills`, `.omp/skills`,
+`.pi/skills`, and `.claude/skills`; global destinations follow each tool's
+native config directory. Existing identical files are skipped; conflicting
+files require `--force`.
+
+Generate repository instructions for every new session:
+
+```bash
+cortex agents init
+```
+
+This creates or updates only the Cortex-managed block in the root `AGENTS.md`,
+preserving your existing instructions. The generated block tells agents to
+run `cortex context` before broad exploration and keep `.cortex/` memory fresh.
+
+The source skill is [skills/cortex/SKILL.md](./skills/cortex/SKILL.md).
 
 ## Memory layout
 
