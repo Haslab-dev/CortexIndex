@@ -199,9 +199,13 @@ func symbolCandidates(o Options, keywords []string) []score {
 		}
 	}
 
-	// call-degree bonus (referenced symbols matter more)
+	// call-degree bonus (referenced symbols matter more); test symbols are
+	// down-ranked — they rarely answer "how does X work" questions.
 	var out []score
 	for _, s := range byID {
+		if strings.HasSuffix(s.sym.File, "_test.go") {
+			s.points *= 0.4
+		}
 		if refs, err := o.Store.RefsByName(s.sym.Name, 1); err == nil && len(refs) > 0 {
 			s.points += 0.5
 			s.callers++
