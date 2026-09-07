@@ -1,0 +1,9 @@
+# Build output
+/cortex
+/dist/
+
+# Derived index (rebuildable; PRD §31.2 — SQLite is derived state)
+.cortex/index/
+
+# OS noise
+.DS_Store
