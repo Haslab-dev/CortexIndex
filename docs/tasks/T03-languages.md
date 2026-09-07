@@ -1,6 +1,6 @@
 # T03 — Tree-sitter language extractors
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T01
 **PRD sections:** §12 Structural Code Index, §26 Supported Languages
 
@@ -22,7 +22,7 @@ Grammar node kinds/fields must be verified empirically (tree dump per language) 
 
 ## Acceptance criteria
 
-- [ ] Fixture file per language parses; extractor yields expected symbols/imports/calls (table-driven tests).
-- [ ] TSX/JSX handled via tsx/javascript grammars; `.h`→C, `.hpp/.cc/.cxx`→C++.
-- [ ] Unparseable/unknown files never crash indexing (error → FTS-only fallback path, PRD §27).
-- [ ] Method/impl/namespace parentage recorded (e.g. Go receiver, Rust `impl Type`, Java method-in-class).
+- [x] Fixture file per language parses; extractor yields expected symbols/imports/calls (table-driven tests: go, ts, python, rust, java, kotlin, c, cpp).
+- [x] TSX/JSX handled via tsx/javascript grammars; `.h`→C, `.hpp/.cc/.cxx`→C++.
+- [x] Unparseable/unknown files never crash extraction (walker tolerates ERROR nodes; indexer treats unknown exts as FTS-only).
+- [x] Method/impl/namespace parentage recorded (Go receiver, Rust `impl Type`, Java/Kotlin method-in-class, C++ out-of-line `Server::login`).

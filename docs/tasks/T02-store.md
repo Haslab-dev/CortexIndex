@@ -1,6 +1,6 @@
 # T02 — SQLite store layer
 
-**Status:** Backlog
+**Status:** Done
 **Depends on:** T01
 **PRD sections:** §12 Structural Code Index, §13 SQLite Schema, §20 Incremental Indexing
 
@@ -19,9 +19,9 @@ All persistence: derived index in `.cortex/index/codebase.db` (SQLite + FTS5). T
 
 ## Acceptance criteria
 
-- [ ] Schema auto-created on open; safe to call repeatedly.
-- [ ] `ReplaceFile` twice for same path leaves zero duplicate rows (all tables + FTS).
-- [ ] `RemoveFile` leaves zero orphan rows.
-- [ ] Symbol lookup by exact name and FTS (incl. camelCase part, e.g. query `auth` finds `AuthService`) works.
-- [ ] File FTS returns snippet highlights.
-- [ ] WAL mode on; bulk insert inside one transaction for a file.
+- [x] Schema auto-created on open; safe to call repeatedly.
+- [x] `ReplaceFile` twice for same path leaves zero duplicate rows (all tables + FTS).
+- [x] `RemoveFile` leaves zero orphan rows.
+- [x] Symbol lookup by exact name and FTS (incl. camelCase part, e.g. query `serv` finds `Server`) works.
+- [x] File FTS returns snippet highlights.
+- [x] WAL mode on; bulk insert inside one transaction for a file.

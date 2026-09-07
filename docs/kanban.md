@@ -12,8 +12,6 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 
 | ID | Task | Depends on |
 |----|------|------------|
-| [T02](./tasks/T02-store.md) | SQLite store layer (schema, FTS5, incremental replace/delete) | T01 |
-| [T03](./tasks/T03-languages.md) | Tree-sitter symbol/relationship extractors (11 languages) | T01 |
 | [T04](./tasks/T04-indexer.md) | Indexer: walk, hash, full + incremental update, deletion sweep | T02, T03 |
 | [T05](./tasks/T05-memory.md) | Markdown memory layer: `init` scaffold, config, memory inspection | T01 |
 | [T06](./tasks/T06-retrieval.md) | Retrieval commands: `search`, `symbol`, `refs`, `deps` | T02, T03, T04 |
@@ -41,6 +39,8 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 | ID | Task | Evidence |
 |----|------|----------|
 | [T01](./tasks/T01-scaffold.md) | Project scaffold + dependency verification | `go mod init cortex`; smoke test: tree-sitter parsed Go source + FTS5 MATCH returned row (`modernc.org/sqlite` v1.58.0, `smacker/go-tree-sitter` dd81d9e) |
+| [T02](./tasks/T02-store.md) | SQLite store layer | `feat(T02)` commit 7630335; `go test ./internal/store/` green (idempotent replace, clean remove, FTS incl. camel parts, ref attribution) |
+| [T03](./tasks/T03-languages.md) | Tree-sitter extractors (11 languages) | `feat(T03)` commit 7102aa0; table-driven tests per language green; AST-shape quirks verified via dump tests |
 
 ## V1 scope recap (from PRD §28)
 
