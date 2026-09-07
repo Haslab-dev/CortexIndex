@@ -20,9 +20,9 @@ import (
 
 // Options controls an indexing run.
 type Options struct {
-	Root       string // repo root (absolute)
-	ExtraIgnores [] string // from config.md
-	MaxFileSize int64  // skip files larger than this
+	Root         string   // repo root (absolute)
+	ExtraIgnores []string // from config.md
+	MaxFileSize  int64    // skip files larger than this
 }
 
 // Stats summarizes one indexing run.

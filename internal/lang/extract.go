@@ -176,11 +176,11 @@ done:
 }
 
 var commentNodeTypes = map[string]bool{
-	"comment":        true, // go, js/ts, python, c, cpp
-	"line_comment":   true, // rust, java, kotlin
-	"block_comment":  true, // rust, java, kotlin
-	"doc_comment":    true, // kotlin
-	"documentation":  true, // some grammars
+	"comment":       true, // go, js/ts, python, c, cpp
+	"line_comment":  true, // rust, java, kotlin
+	"block_comment": true, // rust, java, kotlin
+	"doc_comment":   true, // kotlin
+	"documentation": true, // some grammars
 }
 
 // docAbove collects contiguous comment lines immediately above the node.
