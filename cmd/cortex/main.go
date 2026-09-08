@@ -51,6 +51,8 @@ func main() {
 		err = cmdOverview(rest)
 	case "bootstrap":
 		err = cmdBootstrap(rest)
+	case "benchmark", "bench":
+		err = cmdBenchmark(rest)
 	case "memory":
 		err = cmdMemory(rest)
 	case "watch":
@@ -88,6 +90,7 @@ Usage:
   cortex context "<task>"        Build task-specific context for an agent
   cortex overview                Summarize architecture, modules, and entry points
   cortex bootstrap [--write]     Discover deterministic project/module memory
+  cortex benchmark [--json]      Compare local baseline and Cortex retrieval
   cortex memory [check]          Print memory or validate provenance
   cortex watch [--interval S]    Continuously apply incremental updates
   cortex skill install [flags]   Install Agent Skills for coding agents

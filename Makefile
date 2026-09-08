@@ -58,3 +58,6 @@ help:
 		'make env                          Print a sourceable PATH export' \
 		'make run ARGS="version"          Build and run Cortex' \
 		'make clean                        Remove build output'
+
+bench: build
+	$(DIST)/$(BINARY) benchmark --iterations $${ITERATIONS:-3}
