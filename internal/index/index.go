@@ -70,7 +70,7 @@ func (o Options) shouldIndex(relPath string, isDir bool) bool {
 	base := filepath.Base(relPath)
 	lower := strings.ToLower(base)
 	for _, suf := range defaultIgnoreSuffixes {
-		if strings.HasSuffix(lower, suf) {
+		if strings.HasSuffix(lower, strings.ToLower(suf)) {
 			return false
 		}
 	}
