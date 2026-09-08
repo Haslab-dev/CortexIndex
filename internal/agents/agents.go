@@ -211,9 +211,25 @@ const agentsEnd = "<!-- cortex:end -->"
 const agentsBlock = `<!-- cortex:begin -->
 ## Cortex codebase memory
 
+Resolve Cortex in each fresh shell; do not assume it is on PATH:
+
+    cortex_cmd() {
+      _cortex_bin="${CORTEX_BIN:-}"
+      if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then _cortex_bin="$(command -v cortex 2>/dev/null || true)"; fi
+      if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then
+        for _cortex_root in "$PWD" "$(dirname "$PWD")" "$(dirname "$(dirname "$PWD")")"; do
+          if [ -x "$_cortex_root/dist/cortex" ]; then _cortex_bin="$_cortex_root/dist/cortex"; break; fi
+          if [ -x "$_cortex_root/cortex" ]; then _cortex_bin="$_cortex_root/cortex"; break; fi
+        done
+      fi
+      if [ -z "$_cortex_bin" ] && [ -x "${HOME:-}/.local/bin/cortex" ]; then _cortex_bin="${HOME}/.local/bin/cortex"; fi
+      if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then printf '%s\\n' 'Cortex unavailable; continue normally and install with make install.' >&2; return 127; fi
+      "$_cortex_bin" "$@"
+    }
+
 Before broad repository exploration, run:
 
-    cortex context "<task>"
+    cortex_cmd context "<task>"
 
 Prefer targeted structural retrieval before reading whole files:
 
