@@ -26,6 +26,10 @@
 | [T13](./T13-build-install.md) | Makefile, native build/install/PATH | Delivery follow-up |
 | [T14](./T14-skill-installer.md) | Agent Skill installer | Delivery follow-up |
 | [T15](./T15-agents.md) | `AGENTS.md` generator/updater | Delivery follow-up |
+| [T16](./T16-overview.md) | Intent-aware overview and ranking | Audit follow-up |
+| [T17](./T17-bootstrap.md) | Deterministic bootstrap and validation | Audit follow-up |
+| [T18](./T18-resolver.md) | Binary discovery and agent startup | Audit follow-up |
+| [T19](./T19-benchmark.md) | Local deterministic benchmark | Audit follow-up |
 
 ## Commit policy
 

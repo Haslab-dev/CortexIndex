@@ -44,7 +44,11 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 | [T12](./tasks/T12-dogfood.md) | Dogfooding & polish | indexed own repo: 51 files/265 symbols in 88 ms; update 14 ms (0 reindexed); query 9 ms; `fix(T12)` ranking polish commit |
 | [T13](./tasks/T13-build-install.md) | Makefile, native build/install/PATH | `make check` green; staged install produced mode 0755 binary and `cortex 0.1.0`; `make env` emitted sourceable PATH export |
 | [T14](./tasks/T14-skill-installer.md) | Skill installer | `feat(T14)` commit 919e8dc; destination/idempotence/conflict tests green; CLI installed all five native skills plus shared path |
-| [T15](./tasks/T15-agents.md) | `AGENTS.md` generator/updater | `feat(T15)` commit below; create/append/replace/idempotence tests and CLI smoke test green |
+| [T15](./tasks/T15-agents.md) | `AGENTS.md` generator/updater | `feat(T15)` commit 324b7bb; create/append/replace/idempotence tests and CLI smoke test green |
+| [T16](./tasks/T16-overview.md) | Intent-aware overview and ranking | commits 8487e90/ea70fbd/3be39f7; overview sections, module summaries, entry-point ranking, and tests green |
+| [T17](./tasks/T17-bootstrap.md) | Deterministic bootstrap and validation | commits a01e8ca/1c092a7; proposal/write flow, valid provenance frontmatter, memory check, and tests green |
+| [T18](./tasks/T18-resolver.md) | Binary discovery and agent startup | commits 486d08a/3c77dda; resolver tests and synchronized Skill/AGENTS instructions |
+| [T19](./tasks/T19-benchmark.md) | Local deterministic benchmark | commit 51e802d; `make bench` emits baseline/Cortex metrics with local token estimates |
 
 ## V1 scope recap (from PRD §28)
 
