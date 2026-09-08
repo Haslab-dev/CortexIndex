@@ -8,20 +8,103 @@ import (
 	"cortex/internal/agents"
 )
 
+func printSkillUsage() {
+	fmt.Print(`Usage: cortex skill [install|update] [flags]
+
+Flags:
+  -g, --global     Install skills globally in user home directory
+  --codex          Install for Codex
+  --omp            Install for OMP
+  --opencode       Install for OpenCode
+  --claude         Install for Claude
+  --pi             Install for Pi
+  --shared         Install for shared (.agents/skills)
+  --all              Install for all native agents (default if none specified)
+  --agent <list>     Comma-separated list of agents (e.g. --agent codex,omp)
+  --skip-existing    Skip installation if skill file already exists (default: override)
+  --override, -f     Override / update existing skills (enabled by default)
+  --dir <path>       Target project directory (default: current repository)
+`)
+}
+
 func cmdSkill(args []string) error {
-	if len(args) == 0 || args[0] == "help" || args[0] == "--help" {
-		fmt.Print("Usage: cortex skill install [--agent all|opencode,codex,omp,pi,claude,shared] [--global] [--dir PATH] [--force]\n")
+	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
+		printSkillUsage()
 		return nil
 	}
+	if args[0] == "update" {
+		return cmdSkillInstall(append([]string{"--override"}, args[1:]...))
+	}
 	if args[0] != "install" {
-		return fmt.Errorf("unknown skill command %q; use `cortex skill install`", args[0])
+		return fmt.Errorf("unknown skill command %q; use `cortex skill install` or `cortex skill update`", args[0])
+	}
+	if len(args) > 1 && (args[1] == "help" || args[1] == "--help" || args[1] == "-h") {
+		printSkillUsage()
+		return nil
 	}
 	return cmdSkillInstall(args[1:])
 }
 
+func containsAgentSlice(list []agents.Agent, a agents.Agent) bool {
+	for _, item := range list {
+		if item == a {
+			return true
+		}
+	}
+	return false
+}
+
+func parseAgentFlags(args []string) ([]agents.Agent, error) {
+	var selected []agents.Agent
+	if hasFlag(args, "--opencode") {
+		selected = append(selected, agents.AgentOpenCode)
+	}
+	if hasFlag(args, "--codex") {
+		selected = append(selected, agents.AgentCodex)
+	}
+	if hasFlag(args, "--omp") {
+		selected = append(selected, agents.AgentOMP)
+	}
+	if hasFlag(args, "--pi") {
+		selected = append(selected, agents.AgentPi)
+	}
+	if hasFlag(args, "--claude") {
+		selected = append(selected, agents.AgentClaude)
+	}
+	if hasFlag(args, "--shared") {
+		selected = append(selected, agents.AgentShared)
+	}
+
+	if hasFlag(args, "--all") {
+		all, _ := agents.ParseAgents("all")
+		for _, a := range all {
+			if !containsAgentSlice(selected, a) {
+				selected = append(selected, a)
+			}
+		}
+	}
+
+	if agentRaw := flagOr(args, "--agent"); agentRaw != "" {
+		parsed, err := agents.ParseAgents(agentRaw)
+		if err != nil {
+			return nil, err
+		}
+		for _, a := range parsed {
+			if !containsAgentSlice(selected, a) {
+				selected = append(selected, a)
+			}
+		}
+	}
+
+	if len(selected) > 0 {
+		return selected, nil
+	}
+
+	return agents.ParseAgents("all")
+}
+
 func cmdSkillInstall(args []string) error {
-	agentRaw := flagOr(args, "--agent")
-	selected, err := agents.ParseAgents(agentRaw)
+	selected, err := parseAgentFlags(args)
 	if err != nil {
 		return err
 	}
@@ -33,17 +116,19 @@ func cmdSkillInstall(args []string) error {
 	if err != nil {
 		return err
 	}
+	isGlobal := hasFlag(args, "--global") || hasFlag(args, "-g")
+	skipExisting := hasFlag(args, "--skip-existing")
 	results := agents.Install(agents.InstallOptions{
 		Root:   root,
 		Home:   home,
-		Global: hasFlag(args, "--global"),
+		Global: isGlobal,
 		Agents: selected,
-		Force:  hasFlag(args, "--force"),
+		Force:  !skipExisting,
 	})
 	agents.SortResults(results)
 	fmt.Println("# Cortex Skill Installation")
 	fmt.Println()
-	fmt.Printf("Scope: %s\n", map[bool]string{true: "global", false: "project"}[hasFlag(args, "--global")])
+	fmt.Printf("Scope: %s\n", map[bool]string{true: "global", false: "project"}[isGlobal])
 	fmt.Printf("Agents: %s\n\n", strings.Join(agentNames(selected), ", "))
 	for _, result := range results {
 		if result.Err != nil {
@@ -54,7 +139,7 @@ func cmdSkillInstall(args []string) error {
 	}
 	for _, result := range results {
 		if result.Err != nil {
-			return fmt.Errorf("skill installation had conflicts; rerun with --force to replace: %s", result.Path)
+			return fmt.Errorf("skill installation had conflicts; rerun with --override or --force to replace: %s", result.Path)
 		}
 	}
 	return nil
@@ -69,7 +154,7 @@ func agentNames(as []agents.Agent) []string {
 }
 
 func cmdAgents(args []string) error {
-	if len(args) == 0 || args[0] == "help" || args[0] == "--help" {
+	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
 		fmt.Print("Usage: cortex agents init [--dir PATH]\n")
 		return nil
 	}

@@ -152,14 +152,14 @@ func Install(o InstallOptions) []InstallResult {
 			continue
 		}
 		old, readErr := os.ReadFile(path)
-		if readErr == nil && bytes.Equal(old, embeddedSkill) {
+		if !o.Force && readErr == nil && bytes.Equal(old, embeddedSkill) {
 			result.Action = "skipped"
 			results = append(results, result)
 			continue
 		}
 		if readErr == nil && !o.Force {
 			result.Action = "conflict"
-			result.Err = fmt.Errorf("file exists with different content; use --force")
+			result.Err = fmt.Errorf("file exists with different content; use --force or --override")
 			results = append(results, result)
 			continue
 		}

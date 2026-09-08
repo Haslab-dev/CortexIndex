@@ -54,6 +54,10 @@ func TestInstallIdempotentAndForce(t *testing.T) {
 	if results[0].Action != "skipped" {
 		t.Errorf("identical second install = %+v", results)
 	}
+	results = Install(InstallOptions{Root: root, Agents: []Agent{AgentShared}, Force: true})
+	if results[0].Action != "installed" || results[0].Err != nil {
+		t.Errorf("forced install on identical = %+v", results)
+	}
 	if err := os.WriteFile(results[0].Path, []byte("custom"), 0o600); err != nil {
 		t.Fatal(err)
 	}
