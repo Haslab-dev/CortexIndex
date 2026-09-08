@@ -49,8 +49,10 @@ func main() {
 		err = requireQuery(rest, cmdContext)
 	case "overview":
 		err = cmdOverview(rest)
+	case "bootstrap":
+		err = cmdBootstrap(rest)
 	case "memory":
-		err = cmdMemory()
+		err = cmdMemory(rest)
 	case "watch":
 		err = cmdWatch(rest)
 	case "skill", "skills":
@@ -85,7 +87,8 @@ Usage:
   cortex deps "<name>"           Show dependencies (callees, callers, imports)
   cortex context "<task>"        Build task-specific context for an agent
   cortex overview                Summarize architecture, modules, and entry points
-  cortex memory                  Print all project memory
+  cortex bootstrap [--write]     Discover deterministic project/module memory
+  cortex memory [check]          Print memory or validate provenance
   cortex watch [--interval S]    Continuously apply incremental updates
   cortex skill install [flags]   Install Agent Skills for coding agents
   cortex agents init [--dir P]  Create/update root AGENTS.md instructions
@@ -275,8 +278,20 @@ func cmdIndex(args []string, incremental bool) error {
 	return nil
 }
 
-func cmdMemory() error {
-	root, err := findRoot("")
+func cmdMemory(args []string) error {
+	if len(args) > 0 && (args[0] == "check" || args[0] == "validate") {
+		root, err := findRoot(flagOr(args[1:], "--dir"))
+		if err != nil {
+			return err
+		}
+		report, err := memory.Validate(root)
+		if err != nil {
+			return err
+		}
+		fmt.Print(memory.FormatValidation(report))
+		return nil
+	}
+	root, err := findRoot(flagOr(args, "--dir"))
 	if err != nil {
 		return err
 	}
