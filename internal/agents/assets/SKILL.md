@@ -5,7 +5,27 @@ description: Persistent codebase memory for AI coding agents. Use at the start o
 
 # Cortex — Codebase Memory
 
-You have persistent memory for this repository via the `cortex` binary.
+Use this bounded resolver at the start of a fresh shell so the workflow also works when `cortex` is not on PATH:
+
+```bash
+cortex_cmd() {
+  _cortex_bin="${CORTEX_BIN:-}"
+  if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then _cortex_bin="$(command -v cortex 2>/dev/null || true)"; fi
+  if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then
+    for _cortex_root in "$PWD" "$(dirname "$PWD")" "$(dirname "$(dirname "$PWD")")"; do
+      if [ -x "$_cortex_root/dist/cortex" ]; then _cortex_bin="$_cortex_root/dist/cortex"; break; fi
+      if [ -x "$_cortex_root/cortex" ]; then _cortex_bin="$_cortex_root/cortex"; break; fi
+    done
+  fi
+  if [ -z "$_cortex_bin" ] && [ -x "${HOME:-}/.local/bin/cortex" ]; then _cortex_bin="${HOME}/.local/bin/cortex"; fi
+  if [ -z "$_cortex_bin" ] || [ ! -x "$_cortex_bin" ]; then printf '%s\n' 'Cortex unavailable; continue normally and run make install later.' >&2; return 127; fi
+  "$_cortex_bin" "$@"
+}
+```
+
+Use `cortex_cmd` below instead of assuming the binary is on PATH.
+
+You have persistent memory for this repository via the Cortex binary.
 It gives you architecture knowledge, symbols, call graphs, and conventions
 **without** reading files one by one.
 
