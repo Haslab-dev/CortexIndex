@@ -91,13 +91,13 @@ func TestBuildContextWithIndex(t *testing.T) {
 	for _, want := range []string{
 		"# Codebase Context",
 		"Task: How does authentication work?",
-		"Project Memory",           // Layer 1: memory mentions authentication
-		"Relevant Symbols",         // Layer 2
-		"Server.Login",             // ranked symbol
-		"Source",                   // Layer 5
-		"func (s *Server) Login",   // actual source body
-		"Relevant Files",           // file list
-		"tokens estimated",         // budget footer
+		"Project Memory",         // Layer 1: memory mentions authentication
+		"Relevant Symbols",       // Layer 2
+		"Server.Login",           // ranked symbol
+		"Source",                 // Layer 5
+		"func (s *Server) Login", // actual source body
+		"Relevant Files",         // file list
+		"tokens estimated",       // budget footer
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("context output missing %q:\n%s", want, out)

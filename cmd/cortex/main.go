@@ -47,6 +47,8 @@ func main() {
 		err = requireQuery(rest, cmdDeps)
 	case "context":
 		err = requireQuery(rest, cmdContext)
+	case "overview":
+		err = cmdOverview(rest)
 	case "memory":
 		err = cmdMemory()
 	case "watch":
@@ -82,6 +84,7 @@ Usage:
   cortex refs "<name>"           Find references to a symbol
   cortex deps "<name>"           Show dependencies (callees, callers, imports)
   cortex context "<task>"        Build task-specific context for an agent
+  cortex overview                Summarize architecture, modules, and entry points
   cortex memory                  Print all project memory
   cortex watch [--interval S]    Continuously apply incremental updates
   cortex skill install [flags]   Install Agent Skills for coding agents
@@ -167,7 +170,7 @@ func hasFlag(args []string, flag string) bool {
 func queryOf(args []string) (string, error) {
 	var parts []string
 	for _, a := range args {
-		if a == "--src" || a == "--full" || a == "--interval" || a == "--budget" || a == "--dir" {
+		if a == "--src" || a == "--full" || a == "--interval" || a == "--budget" || a == "--dir" || a == "--overview" {
 			break
 		}
 		if a == "--dir" {
@@ -379,11 +382,15 @@ func cmdContext(root, task string, args []string) error {
 		return err
 	}
 	defer st.Close()
+	intent := context.IntentTask
+	explicit := false
+	if hasFlag(args, "--overview") {
+		intent = context.IntentOverview
+		explicit = true
+	}
 	out := context.Build(task, context.Options{
-		Root:     root,
-		Budget:   budget,
-		HasIndex: indexExists(st),
-		Store:    st,
+		Root: root, Budget: budget, HasIndex: indexExists(st), Store: st,
+		Intent: intent, ExplicitIntent: explicit,
 	})
 	fmt.Print(out)
 	return nil

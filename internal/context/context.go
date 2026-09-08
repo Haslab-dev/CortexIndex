@@ -18,12 +18,14 @@ import (
 
 // Options controls a context build.
 type Options struct {
-	Budget      int    // approximate token budget for the whole response
-	Root        string // repo root
-	HasIndex    bool   // false → lexical fallback only
-	Store       *store.Store
-	MaxSymbols  int // cap on symbols returned (default 8)
-	WithSources int // how many top symbols get source bodies (default 3)
+	Budget         int    // approximate token budget for the whole response
+	Root           string // repo root
+	HasIndex       bool   // false → lexical fallback only
+	Store          *store.Store
+	MaxSymbols     int // cap on symbols returned (default 8)
+	WithSources    int // how many top symbols get source bodies (default 3)
+	Intent         Intent
+	ExplicitIntent bool
 }
 
 // DefaultBudget is the default approximate token budget.
@@ -41,6 +43,12 @@ func Build(task string, o Options) string {
 	}
 	if o.WithSources <= 0 {
 		o.WithSources = 3
+	}
+	if !o.ExplicitIntent {
+		o.Intent = DetectIntent(task)
+	}
+	if o.Intent == IntentOverview {
+		return buildOverview(task, o)
 	}
 	keywords := Keywords(task)
 
