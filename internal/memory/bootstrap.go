@@ -243,14 +243,13 @@ func moduleProposal(path string, files []store.File, syms []store.SymbolRow, imp
 	var b strings.Builder
 	sources := make([]string, 0, len(files))
 	var manifest strings.Builder
+	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
 	for _, f := range files {
 		sources = append(sources, f.Path)
 		manifest.WriteString(f.Path + "\x00" + f.Hash + "\n")
 	}
-	sort.Strings(sources)
 	sum := sha256.Sum256([]byte(manifest.String()))
-	b.WriteString(generatedHeader(sources))
-	b.WriteString(fmt.Sprintf("source_hash: sha256:%s\nstatus: active\n--->\n\n", hex.EncodeToString(sum[:])))
+	b.WriteString(generatedFrontmatter(sources, "sha256:"+hex.EncodeToString(sum[:])))
 	b.WriteString("# Module: " + path + "\n\n## Responsibility\n\nObserved source grouping for `" + path + "`. Semantic responsibility requires review.\n\n## Important Symbols\n\n")
 	seen := map[string]bool{}
 	for _, s := range syms {
@@ -275,17 +274,22 @@ func moduleProposal(path string, files []store.File, syms []store.SymbolRow, imp
 	return b.String()
 }
 
-func generatedHeader(sources []string) string {
+func generatedHeader(sources []string) string { return generatedFrontmatter(sources, "") }
+
+func generatedFrontmatter(sources []string, sourceHash string) string {
 	var b strings.Builder
 	b.WriteString("---\n")
 	b.WriteString("cortex: generated\ngenerator: deterministic\ngenerator_version: \"" + generatorVersion + "\"\n")
-	b.WriteString("generated_at: " + time.Now().UTC().Format(time.RFC3339) + "\n")
 	if len(sources) > 0 {
 		b.WriteString("source:\n")
 		for _, s := range sources {
 			b.WriteString("  - " + s + "\n")
 		}
 	}
+	if sourceHash != "" {
+		b.WriteString("source_hash: " + sourceHash + "\n")
+	}
+	b.WriteString("status: active\n---\n\n")
 	return b.String()
 }
 
