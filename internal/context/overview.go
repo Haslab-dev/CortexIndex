@@ -62,11 +62,23 @@ func overviewMemory(root string) scoredSection {
 	if err != nil {
 		return scoredSection{}
 	}
-	wanted := map[string]bool{"project.md": true, "architecture.md": true, "conventions.md": true}
 	var b strings.Builder
 	b.WriteString("## Project Memory\n\n")
 	count := 0
+	if claims, err := memory.LoadClaims(root); err == nil {
+		for _, claim := range claims {
+			if claim.Status == "deprecated" || claim.Status == "superseded" || claim.Status == "proposed" {
+				continue
+			}
+			b.WriteString(formatClaim(claim))
+			count++
+		}
+	}
+	wanted := map[string]bool{"project.md": true, "architecture.md": true, "conventions.md": true}
 	for _, f := range files {
+		if _, ok, _ := memory.ParseClaim(f.RelPath, f.Content); ok {
+			continue
+		}
 		if !wanted[f.RelPath] && !strings.HasPrefix(f.RelPath, "decisions/") {
 			continue
 		}

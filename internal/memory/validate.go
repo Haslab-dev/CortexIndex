@@ -43,7 +43,22 @@ func Validate(root string) (ValidationReport, error) {
 		return ValidationReport{}, err
 	}
 	var report ValidationReport
+	claimIDs := map[string]string{}
+	var claims []Claim
 	for _, f := range files {
+		if claim, ok, parseErr := ParseClaim(f.RelPath, f.Content); ok {
+			if parseErr != nil {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateInvalid, parseErr.Error()})
+				continue
+			}
+			if previous, exists := claimIDs[claim.ID]; exists {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateInvalid, fmt.Sprintf("duplicate claim id %q (already in %s)", claim.ID, previous)})
+				continue
+			}
+			claimIDs[claim.ID] = f.RelPath
+			claims = append(claims, claim)
+			continue
+		}
 		meta, ok, invalid := parseGeneratedMeta(f.Content)
 		if invalid {
 			report.Items = append(report.Items, ValidationItem{f.RelPath, StateInvalid, "malformed generated frontmatter"})
@@ -55,6 +70,33 @@ func Validate(root string) (ValidationReport, error) {
 		}
 		state, detail := checkMeta(root, meta)
 		report.Items = append(report.Items, ValidationItem{f.RelPath, state, detail})
+	}
+	for _, claim := range claims {
+		if missing := missingRelations(claim, claimIDs); len(missing) > 0 {
+			report.Items = append(report.Items, ValidationItem{claim.File, StateInvalid, "missing related claim: " + strings.Join(missing, ", ")})
+			continue
+		}
+		detail := fmt.Sprintf("claim %s (%s), status %s", claim.ID, claim.Type, claim.Status)
+		if claim.Confidence != nil {
+			detail += fmt.Sprintf(", confidence %.2f", *claim.Confidence)
+		}
+		report.Items = append(report.Items, ValidationItem{claim.File, StateCurrent, detail})
+	}
+	for _, f := range files {
+		if work, ok, parseErr := ParseWorkRecord(f.RelPath, f.Content); ok {
+			if parseErr != nil {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateInvalid, parseErr.Error()})
+			} else {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateCurrent, fmt.Sprintf("work %s, status %s", work.ID, work.Status)})
+			}
+		}
+		if pref, ok, parseErr := ParsePreference(f.RelPath, f.Content); ok {
+			if parseErr != nil {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateInvalid, parseErr.Error()})
+			} else {
+				report.Items = append(report.Items, ValidationItem{f.RelPath, StateCurrent, fmt.Sprintf("preference %s, scope %s, confidence %.2f", pref.ID, pref.Scope, pref.Confidence)})
+			}
+		}
 	}
 	return report, nil
 }

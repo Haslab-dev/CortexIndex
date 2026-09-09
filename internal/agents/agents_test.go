@@ -114,7 +114,7 @@ func TestUpdateAgentsCreateAppendReplaceIdempotent(t *testing.T) {
 		t.Fatalf("replace action=%q err=%v", action, err)
 	}
 	updated, _ := os.ReadFile(path)
-	if !strings.Contains(string(updated), "# Human instructions") || !strings.Contains(string(updated), "# Keep me") || !strings.Contains(string(updated), "Before broad repository exploration") {
+	if !strings.Contains(string(updated), "# Human instructions") || !strings.Contains(string(updated), "# Keep me") || !strings.Contains(string(updated), "Route by task uncertainty") {
 		t.Errorf("unmanaged content or generated block missing: %q", updated)
 	}
 	info, _ := os.Stat(path)

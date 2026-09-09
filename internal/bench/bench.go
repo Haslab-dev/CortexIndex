@@ -101,9 +101,10 @@ func runBaseline(root, task string, iteration int) (Row, error) {
 	row.OutputTokensEst = row.OutputChars / 4
 	row.InputTokensEst = row.InputChars / 4
 	row.DurationMS = time.Since(start).Milliseconds()
-	row.Success = strings.Contains(strings.ToLower(output.String()), "server") || row.FilesRead > 0
+	lowOutput := strings.ToLower(output.String())
+	row.Success = strings.Contains(lowOutput, "server.go") && strings.Contains(lowOutput, "docs.md")
 	if !row.Success {
-		row.Failure = "baseline found no relevant fixture files"
+		row.Failure = "baseline missed expected authentication fixture files"
 	}
 	return row, nil
 }

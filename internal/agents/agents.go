@@ -227,9 +227,20 @@ Resolve Cortex in each fresh shell; do not assume it is on PATH:
       "$_cortex_bin" "$@"
     }
 
-Before broad repository exploration, run:
+Route by task uncertainty; Cortex complements native tools and does not replace them:
 
-    cortex_cmd context "<task>"
+- Use cortex_cmd overview for repository orientation or a project tour.
+- Use cortex_cmd context "<task>" for unfamiliar, architectural, cross-module,
+  impact, convention, or planning-heavy work.
+- Use cortex_cmd symbol, refs, deps, and search for structural questions.
+- Use native grep/glob/source reads for known local edits and exact file inspection.
+- Use cortex_cmd history for bounded commit/message/file-history questions.
+- Use native git show, diff, and blame for full or advanced history; Cortex history
+  is live Git evidence, not a SQLite cache.
+- Use cortex_cmd taste lint/import/list/show to review local Taste packages.
+- Imported Taste preferences are proposed by default; enable them explicitly after review.
+- Confidence is belief strength, not authority; Taste never overrides source or explicit requirements.
+- Harnesses may emit explicit feedback with cortex_cmd taste feedback; Cortex does not observe UI actions automatically.
 
 Prefer targeted structural retrieval before reading whole files:
 
@@ -238,13 +249,19 @@ Prefer targeted structural retrieval before reading whole files:
 - cortex deps "<Name>" for callees, callers, and imports
 - cortex search "<terms>" for lexical symbol/file search
 
+For meaningful tasks, record goals, plans, decisions, outcomes, and open questions
+at task boundaries under .cortex/work/. Do not store temporary task chatter as facts.
+
 Treat .cortex/*.md as durable, human-editable project memory. Record only lasting
 architecture, conventions, decisions, and constraints, with source, updated_at,
-and status provenance when possible. Do not store temporary task chatter.
+and status provenance when possible. Typed claims expose confidence and evidence;
+proposed or inferred claims are not project constraints. Preferences are soft
+judgment with confidence, never authority over source or explicit requirements.
 
-Run cortex update after code changes. Source code is authoritative when it
-contradicts stale Markdown. If Cortex is unavailable or the index is incomplete,
-continue with normal exploration and run cortex index when possible.
+Read exact source before editing and run cortex update after code changes. Source
+code is authoritative when it contradicts stale Markdown. If Cortex is unavailable
+or the index is incomplete, continue with normal exploration and run cortex index
+when possible.
 <!-- cortex:end -->`
 
 // AgentsBlock returns the generated managed content.

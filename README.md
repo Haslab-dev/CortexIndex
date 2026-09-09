@@ -1,11 +1,15 @@
 # Cortex
 
-**Persistent codebase memory for AI coding agents.**
+**The harness-independent brain skill for a codebase.**
 
-Cortex gives any coding agent instant, durable understanding of a repository —
-architecture, symbols, call graphs, conventions — so a new session starts
-already knowing the codebase instead of burning tokens grepping and reading
-files one by one.
+Cortex gives Claude Code, Codex, OpenCode, Command Code, and other agent
+harnesses an evidence-backed understanding of a repository — architecture,
+symbols, call graphs, conventions, and typed durable claims — so a session can
+start with a reliable map instead of guessing through files one by one.
+
+Cortex complements the harness: use it for unfamiliar, architectural, and
+cross-module work; keep native grep, file reads, and Git as the fast path for
+known local edits and direct history questions.
 
 > Make an AI agent behave as if it already understands the repository
 > while minimizing unnecessary context and token usage.
@@ -86,8 +90,13 @@ the memory knows, the less the agent explores. Commit `.cortex/` to Git
 | `cortex symbol "<Name>" [--src]` | Show a symbol: location, signature, docs, calls, callers |
 | `cortex refs "<Name>"` | All references to a symbol, grouped by file |
 | `cortex deps "<Name>"` | Callees, callers, and file imports of a symbol |
+| `cortex history [query]` | Bounded live Git commit and file history |
 | `cortex context "<task>"` | **The flagship:** task-specific, budgeted context for an agent |
 | `cortex memory` | Print all project memory |
+| `cortex memory work` | Show active task work memory |
+| `cortex memory preferences` | Show active scoped preferences |
+| `cortex memory proposals` | Show reviewable proposed memory |
+| `cortex taste <command>` | Import and manage local Taste packages |
 | `cortex watch [--interval 2s]` | Keep the index fresh in the background |
 | `cortex version` | Print version |
 
@@ -138,6 +147,10 @@ The source skill is [skills/cortex/SKILL.md](./skills/cortex/SKILL.md).
 │   └── auth.md
 ├── modules/           # one file per major module
 │   └── auth.md
+├── work/              # task goals, plans, outcomes, and open questions
+├── preferences/       # scoped soft preferences and Taste-compatible records
+├── taste/              # local Taste package manifests (derived metadata)
+├── feedback/           # explicit local feedback audit events
 └── index/
     └── codebase.db    # derived SQLite index (rebuildable)
 ```
@@ -149,15 +162,33 @@ Durable knowledge only — no task chatter:
 - ✅ “Authentication must go through AuthService.”
 - ❌ “User asked to fix login button today.”
 
-Each fact may carry provenance and lifecycle:
+For machine-readable durable claims, use one claim per Markdown file:
 
 ```md
-source: src/auth/AuthService.ts
-updated_at: 2026-09-07
-status: active        # active | deprecated
+---
+id: auth-service-boundary
+type: constraint
+scope: repository
+confidence: 0.95
+status: active
+updated_at: 2026-09-09
+source: [src/auth/AuthService.ts]
+evidence: [src/auth/AuthService.ts#L10-L22]
+---
+
+Authentication must go through AuthService.
 ```
 
-Source code always wins over stale memory.
+Supported claim types include `fact`, `decision`, `constraint`, `architecture`,
+`module`, `convention`, `behavior`, and `preference`. Confidence expresses
+belief strength for soft or inferred knowledge; it does not override explicit
+requirements or source authority. Claims can use `supersedes` and `contradicts`
+relationships. Proposed, deprecated, and superseded claims remain inspectable
+but are excluded from ordinary context retrieval.
+
+Legacy free-form Markdown remains supported. Source code always wins over stale
+memory. `cortex memory check` reports invalid claims, missing relationships, and
+stale generated source hashes.
 
 ## Configuration
 

@@ -10,7 +10,7 @@ GO ?= go
 CGO_ENABLED ?= 1
 GOFLAGS ?=
 
-.PHONY: all build test vet check install uninstall env run clean help
+.PHONY: all build test vet check install uninstall env run clean help bench
 
 all: build
 
@@ -57,7 +57,8 @@ help:
 		'make install PREFIX=/usr/local   Override install prefix' \
 		'make env                          Print a sourceable PATH export' \
 		'make run ARGS="version"          Build and run Cortex' \
-		'make clean                        Remove build output'
+			'make clean                        Remove build output' \
+			'make bench ITERATIONS=3          Run the local benchmark suite'
 
 bench: build
 	$(DIST)/$(BINARY) benchmark --iterations $${ITERATIONS:-3}

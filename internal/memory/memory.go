@@ -41,6 +41,10 @@ func ScaffoldFiles() []Scaffold {
 		{RelPath: "conventions.md", Content: conventionsTemplate},
 		{RelPath: filepath.Join("decisions", ".keep"), Content: ""},
 		{RelPath: filepath.Join("modules", ".keep"), Content: ""},
+		{RelPath: filepath.Join("work", ".keep"), Content: ""},
+		{RelPath: filepath.Join("preferences", ".keep"), Content: ""},
+		{RelPath: filepath.Join("taste", "packages", ".keep"), Content: ""},
+		{RelPath: filepath.Join("feedback", ".keep"), Content: ""},
 		{RelPath: filepath.Join("index", ".gitignore"), Content: "*\n!.gitignore\n"},
 	}
 }
@@ -160,7 +164,7 @@ func LoadAll(root string) ([]MemoryFile, error) {
 			return nil
 		}
 		rel = filepath.ToSlash(rel)
-		if rel == "config.md" || strings.HasPrefix(rel, "index/") {
+		if rel == "config.md" || strings.HasPrefix(rel, "index/") || strings.HasPrefix(rel, "taste/") || strings.HasPrefix(rel, "feedback/") {
 			return nil
 		}
 		data, err := os.ReadFile(path)

@@ -49,6 +49,7 @@ Progress tracker for the Cortex (Codebase Memory Engine) V1 build, derived from 
 | [T17](./tasks/T17-bootstrap.md) | Deterministic bootstrap and validation | commits a01e8ca/1c092a7; proposal/write flow, valid provenance frontmatter, memory check, and tests green |
 | [T18](./tasks/T18-resolver.md) | Binary discovery and agent startup | commits 486d08a/3c77dda; resolver tests and synchronized Skill/AGENTS instructions |
 | [T19](./tasks/T19-benchmark.md) | Local deterministic benchmark | commit 51e802d; `make bench` emits baseline/Cortex metrics with local token estimates |
+| [T20](./tasks/T20-codebase-brain.md) | Codebase brain foundation | typed claims, proposed filtering, live `history`, work records, scoped preferences, and real-repo smoke validation |
 
 ## V1 scope recap (from PRD §28)
 

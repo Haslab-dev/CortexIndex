@@ -45,6 +45,8 @@ func main() {
 		err = requireQuery(rest, cmdRefs)
 	case "deps":
 		err = requireQuery(rest, cmdDeps)
+	case "history":
+		err = cmdHistory(rest)
 	case "context":
 		err = requireQuery(rest, cmdContext)
 	case "overview":
@@ -61,6 +63,8 @@ func main() {
 		err = cmdSkill(rest)
 	case "agents":
 		err = cmdAgents(rest)
+	case "taste":
+		err = cmdTaste(rest)
 	case "version", "--version", "-v":
 		fmt.Printf("cortex %s\n", version)
 	case "help", "--help", "-h":
@@ -86,15 +90,20 @@ Usage:
   cortex search "<query>"        Search symbols and file contents
   cortex symbol "<name>" [--src] Show a symbol (calls, callers, docs, source)
   cortex refs "<name>"           Find references to a symbol
-  cortex deps "<name>"           Show dependencies (callees, callers, imports)
-  cortex context "<task>"        Build task-specific context for an agent
+	cortex deps "<name>"           Show dependencies (callees, callers, imports)
+	cortex history [query]         Show bounded live Git history
+	cortex context "<task>"        Build task-specific context for an agent
   cortex overview                Summarize architecture, modules, and entry points
   cortex bootstrap [--write]     Discover deterministic project/module memory
-  cortex benchmark [--json]      Compare local baseline and Cortex retrieval
-  cortex memory [check]          Print memory or validate provenance
+	cortex benchmark [--iterations N] [--json]  Compare local baseline and Cortex retrieval
+	cortex memory [check]          Print memory or validate provenance
+	cortex memory work              Show active task work memory
+	cortex memory preferences       Show active scoped preferences
+	cortex memory proposals         Show reviewable proposed memory
   cortex watch [--interval S]    Continuously apply incremental updates
   cortex skill install [flags]   Install Agent Skills for coding agents
   cortex agents init [--dir P]  Create/update root AGENTS.md instructions
+  cortex taste <command>         Import and manage local Taste packages
   cortex version                 Print version
 
 All output is Markdown. Memory lives in .cortex/*.md (human-editable);
@@ -282,6 +291,51 @@ func cmdIndex(args []string, incremental bool) error {
 }
 
 func cmdMemory(args []string) error {
+	root, err := findRoot(flagOr(args, "--dir"))
+	if err != nil {
+		return err
+	}
+	if len(args) > 0 && (args[0] == "work" || args[0] == "preferences" || args[0] == "proposals") {
+		switch args[0] {
+		case "work":
+			records, err := memory.LoadWorkRecords(root)
+			if err != nil {
+				return err
+			}
+			fmt.Print("# Work Memory\n\n")
+			for _, record := range records {
+				if record.Status == "active" || record.Status == "open" || record.Status == "blocked" {
+					fmt.Print(memory.FormatWork(record))
+				}
+			}
+		case "preferences":
+			prefs, err := memory.LoadPreferences(root)
+			if err != nil {
+				return err
+			}
+			fmt.Print("# Preferences\n\n")
+			for _, pref := range prefs {
+				if pref.Status == "active" {
+					fmt.Print(memory.FormatPreference(pref))
+				}
+			}
+		case "proposals":
+			fmt.Print("# Memory Proposals\n\n")
+			claims, _ := memory.LoadClaims(root)
+			for _, claim := range claims {
+				if claim.Status == "proposed" {
+					fmt.Printf("- `%s` (%s): %s\n", claim.ID, claim.Type, claim.Text)
+				}
+			}
+			prefs, _ := memory.LoadPreferences(root)
+			for _, pref := range prefs {
+				if pref.Status == "proposed" {
+					fmt.Printf("- `%s` (preference, confidence %.2f): %s\n", pref.ID, pref.Confidence, pref.Text)
+				}
+			}
+		}
+		return nil
+	}
 	if len(args) > 0 && (args[0] == "check" || args[0] == "validate") {
 		root, err := findRoot(flagOr(args[1:], "--dir"))
 		if err != nil {
@@ -293,10 +347,6 @@ func cmdMemory(args []string) error {
 		}
 		fmt.Print(memory.FormatValidation(report))
 		return nil
-	}
-	root, err := findRoot(flagOr(args, "--dir"))
-	if err != nil {
-		return err
 	}
 	out, err := memory.RenderAll(root)
 	if err != nil {

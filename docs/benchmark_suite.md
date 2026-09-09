@@ -85,7 +85,37 @@ To get a complete, balanced evaluation, test across four distinct developer scen
 
 ---
 
-### 4. Metrics Scorecard to Track
+### 4. Executable brain scenarios
+
+The local benchmark currently provides a deterministic authentication fixture.
+For real-life evaluation, run the same repository and task through these
+separate scenarios rather than assuming Cortex is always cheaper than native
+search:
+
+1. **Orientation:** native `find`/`grep`/reads versus `cortex overview`; score
+   required modules, entry points, valid path references, calls, output size,
+   and latency.
+2. **Cross-module tracing:** native exploration versus `cortex context` plus
+   `symbol`/`refs`/`deps`; score evidence recall and task correctness.
+3. **History:** native `git log`/`show` versus `cortex history`; score commit,
+   date, subject, and changed-file correctness. Current Cortex history is a
+   live Git query, not a SQLite cache.
+4. **Work memory:** record a goal/plan/outcome under `.cortex/work/`, start a
+   fresh process, and query it through `cortex context` or `cortex memory work`.
+   Score goal and outcome recall and freshness after `cortex update`.
+5. **Preferences:** compare explicit repository constraints with active and
+   proposed scoped preferences. Score precedence, confidence/provenance display,
+   and rejection of proposed preferences in ordinary context.
+6. **Fallback:** repeat with no index, no Git repository, malformed memory, and
+   parser failures; the agent must receive an honest fallback rather than a
+   fabricated answer.
+
+Record case ID, fixture revision, commands, cold/warm preparation, task latency,
+output chars, local chars/4 token estimates, valid evidence references, and the
+specific oracle result. The existing narrative reports are qualitative evidence
+from different model/client runs, not a pooled statistical benchmark.
+
+### 5. Metrics Scorecard to Track
 
 When running the prompt in both arms (**With Cortex** vs **Without Cortex**), record these 5 metrics:
 

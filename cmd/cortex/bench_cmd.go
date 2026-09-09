@@ -11,9 +11,11 @@ import (
 func cmdBenchmark(args []string) error {
 	iterations := 1
 	if v, ok := flagValue(args, "--iterations"); ok {
-		if n, err := strconv.Atoi(v); err == nil && n > 0 {
-			iterations = n
+		n, err := strconv.Atoi(v)
+		if err != nil || n <= 0 {
+			return fmt.Errorf("--iterations must be a positive integer")
 		}
+		iterations = n
 	}
 	exe, err := os.Executable()
 	if err != nil {

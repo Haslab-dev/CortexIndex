@@ -54,10 +54,16 @@ func Build(task string, o Options) string {
 
 	var sections []scoredSection
 
-	// Layer 1 — Markdown memory.
+	// Layer 1 — durable project memory, work state, and soft preferences.
 	memoryHit := memorySection(o.Root, keywords)
 	if memoryHit.body != "" {
 		sections = append(sections, memoryHit)
+	}
+	if workHit := workSection(o.Root, keywords); workHit.body != "" {
+		sections = append(sections, workHit)
+	}
+	if prefHit := preferenceSection(o.Root, keywords); prefHit.body != "" {
+		sections = append(sections, prefHit)
 	}
 
 	if o.HasIndex && o.Store != nil {
@@ -253,44 +259,120 @@ func memorySection(root string, keywords []string) scoredSection {
 	if err != nil || len(files) == 0 {
 		return scoredSection{}
 	}
-	var picked []memory.MemoryFile
-	for _, f := range files {
-		low := strings.ToLower(f.Content)
-		hits := 0
-		for _, kw := range keywords {
-			if strings.Contains(low, kw) {
-				hits++
-			}
-		}
-		if hits > 0 {
-			picked = append(picked, f)
-			if len(picked) >= 3 {
-				break
-			}
-		}
-	}
-	if len(picked) == 0 {
-		// conventions are cheap and always useful
-		for _, f := range files {
-			if f.RelPath == "conventions.md" && strings.TrimSpace(stripComments(f.Content)) != "" {
-				picked = append(picked, f)
-				break
-			}
-		}
-	}
-	if len(picked) == 0 {
-		return scoredSection{}
-	}
 	var b strings.Builder
 	b.WriteString("## Project Memory\n\n")
-	for _, f := range picked {
-		content := strings.TrimRight(stripComments(f.Content), "\n")
-		if content == "" {
-			continue
+	wrote := false
+
+	// Typed claims are the preferred memory surface. Invalid claims are
+	// skipped here and reported by `cortex memory check`; legacy Markdown still
+	// remains searchable below.
+	if claims, err := memory.LoadClaims(root); err == nil {
+		count := 0
+		for _, claim := range claims {
+			if claim.Status == "deprecated" || claim.Status == "superseded" || claim.Status == "proposed" {
+				continue
+			}
+			low := strings.ToLower(claim.Text + " " + claim.Type + " " + claim.Scope)
+			hits := 0
+			for _, kw := range keywords {
+				if strings.Contains(low, kw) {
+					hits++
+				}
+			}
+			if hits == 0 && len(keywords) > 0 {
+				continue
+			}
+			b.WriteString(formatClaim(claim))
+			wrote = true
+			count++
+			if count >= 3 {
+				break
+			}
 		}
-		b.WriteString(fmt.Sprintf("### %s\n\n%s\n\n", f.RelPath, content))
+	}
+
+	// Preserve the existing free-form memory behavior for files that have not
+	// opted into the claim format.
+	if !wrote {
+		var picked []memory.MemoryFile
+		for _, f := range files {
+			if _, ok, _ := memory.ParseClaim(f.RelPath, f.Content); ok {
+				continue
+			}
+			if _, ok, _ := memory.ParsePreference(f.RelPath, f.Content); ok {
+				continue
+			}
+			if _, ok, _ := memory.ParseWorkRecord(f.RelPath, f.Content); ok {
+				continue
+			}
+			low := strings.ToLower(f.Content)
+			hits := 0
+			for _, kw := range keywords {
+				if strings.Contains(low, kw) {
+					hits++
+				}
+			}
+			if hits > 0 {
+				picked = append(picked, f)
+				if len(picked) >= 3 {
+					break
+				}
+			}
+		}
+		if len(picked) == 0 {
+			for _, f := range files {
+				if f.RelPath == "conventions.md" && strings.TrimSpace(stripComments(f.Content)) != "" {
+					picked = append(picked, f)
+					break
+				}
+			}
+		}
+		for _, f := range picked {
+			content := strings.TrimRight(stripComments(f.Content), "\n")
+			if content == "" {
+				continue
+			}
+			b.WriteString(fmt.Sprintf("### %s\n\n%s\n\n", f.RelPath, content))
+			wrote = true
+		}
+	}
+	if !wrote {
+		return scoredSection{}
 	}
 	return scoredSection{name: "memory", body: b.String(), priority: 1}
+}
+
+func formatClaim(c memory.Claim) string {
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("### %s [%s]\n\n", c.File, c.Type))
+	b.WriteString(c.Text + "\n\n")
+	b.WriteString(fmt.Sprintf("- Claim: `%s`\n- Scope: `%s`\n- Status: `%s`\n", c.ID, c.Scope, c.Status))
+	if c.Confidence != nil {
+		b.WriteString(fmt.Sprintf("- Confidence: %.2f\n", *c.Confidence))
+	}
+	if len(c.Sources) > 0 {
+		b.WriteString("- Sources: " + strings.Join(backtickList(c.Sources), ", ") + "\n")
+	}
+	if len(c.Evidence) > 0 {
+		refs := make([]string, 0, len(c.Evidence))
+		for _, e := range c.Evidence {
+			refs = append(refs, "`"+e.Raw+"`")
+		}
+		b.WriteString("- Evidence: " + strings.Join(refs, ", ") + "\n")
+	}
+	if c.Status == "proposed" {
+		b.WriteString("- Note: proposed memory; do not treat as a repository constraint.\n")
+	}
+	b.WriteString("\n")
+	return b.String()
+}
+
+func backtickList(values []string) []string {
+	out := make([]string, len(values))
+	for i, value := range values {
+		out[i] = "`" + value + "`"
+	}
+	return out
 }
 
 // symbolsSection renders the ranked symbol table (Layer 2).
@@ -365,6 +447,68 @@ func sourcesSection(o Options, syms []score) scoredSection {
 }
 
 // filesSection lists files relevant to the keywords (content FTS).
+func workSection(root string, keywords []string) scoredSection {
+	records, err := memory.LoadWorkRecords(root)
+	if err != nil {
+		return scoredSection{}
+	}
+	var b strings.Builder
+	b.WriteString("## Work Memory\n\n")
+	wrote := false
+	for _, record := range records {
+		if record.Status != "active" && record.Status != "open" && record.Status != "blocked" {
+			continue
+		}
+		text := strings.ToLower(record.ID + " " + record.Sections["Goal"] + " " + record.Sections["Plan"])
+		hit := len(keywords) == 0
+		for _, kw := range keywords {
+			if strings.Contains(text, kw) {
+				hit = true
+				break
+			}
+		}
+		if hit {
+			b.WriteString(memory.FormatWork(record))
+			wrote = true
+		}
+	}
+	if !wrote {
+		return scoredSection{}
+	}
+	return scoredSection{name: "work", body: b.String(), priority: 2}
+}
+
+func preferenceSection(root string, keywords []string) scoredSection {
+	prefs, err := memory.LoadPreferences(root)
+	if err != nil {
+		return scoredSection{}
+	}
+	var b strings.Builder
+	b.WriteString("## Preferences\n\n")
+	wrote := false
+	for _, pref := range prefs {
+		if pref.Status != "active" || (pref.Scope == "repository" && pref.Package == "") {
+			continue
+		}
+		text := strings.ToLower(pref.Text + " " + pref.Scope + " " + pref.Key + " " + pref.ID)
+		hit := len(keywords) == 0
+		for _, kw := range keywords {
+			if strings.Contains(text, kw) {
+				hit = true
+				break
+			}
+		}
+		if hit {
+			b.WriteString(memory.FormatPreference(pref))
+			wrote = true
+		}
+	}
+	if !wrote {
+		return scoredSection{}
+	}
+	return scoredSection{name: "preferences", body: b.String(), priority: 1}
+}
+
 func filesSection(o Options, keywords []string) scoredSection {
 	if len(keywords) == 0 {
 		return scoredSection{}
@@ -429,8 +573,10 @@ var sectionOrder = []struct {
 	name     string
 	priority int
 }{
-	{"memory", 1},
-	{"symbols", 3},
+	{"memory", 3},
+	{"work", 2},
+	{"preferences", 1},
+	{"symbols", 4},
 	{"sources", 0},
 	{"files", 1},
 	{"fallback", 2},
